@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Book</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+</head>
+<body onload="fetchContacts()">
+
+    <h2>All Contacts</h2>
+    <div id="table">Loading contacts...</div>
+    <button id="refresh">Refresh</button>
+    <button id="addContact">Add Contact</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById("refresh").addEventListener('click', fetchContacts);
+            document.getElementById("addContact").addEventListener('click', () => {
+                window.open("add-contact.html", "_self");
+            });
+        });
+
+        function fetchContacts() {
+            fetch(rootPath + "get-contacts/?apiKey=" + apiKey)
+                .then(response => response.json())
+                .then(data => displayOutput(data))
+                .catch(err => {
+                    alert("Failed to load contacts: " + err);
+                });
+        }
+
+        function displayOutput(data) {
+            let output = "<table border='1' cellpadding='10'>";
+            data.forEach(contact => {
+                output += `
+                    <tr onclick="editContact(${contact.id})">
+                        <td><img src="${rootPath}uploads/${contact.avatar}" width="50" height="50"></td>
+                        <td>${contact.firstname}</td>
+                        <td>${contact.lastname}</td>
+                    </tr>`;
+            });
+            output += "</table>";
+            document.getElementById("table").innerHTML = output;
+        }
+
+        function editContact(id) {
+            window.open("edit-contact.html?id=" + id, "_self");
+        }
+    </script>
+<footer style="
+  background-color: #222;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  font-family: 'Segoe UI', sans-serif;
+">
+  <p style="margin: 5px 0;">&copy; 2025 | Built by Lebini W Jack with 💻 & ❤</p>
+  <p style="margin: 5px 0;">
+    <a href="index.html" style="color: #1d82a3; text-decoration: none;">Home</a> |
+    <a href="add-contact.html" style="color: #21aad8; text-decoration: none;">Add Contact</a> |
+    <a href="edit-contact.html?id=1" style="color: #00BFFF; text-decoration: none;">Edit Contact</a>
+  </p>
+</footer>
+
+</body>
+</html>

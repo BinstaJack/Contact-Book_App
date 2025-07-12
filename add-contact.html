@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Contact</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+</head>
+<body>
+
+    <h2>Add Contact</h2>
+    <form id="editForm">
+        <label>First Name:</label><input type="text" name="firstname" id="firstname"><br/>
+        <label>Last Name:</label><input type="text" name="lastname" id="lastname"><br/>
+        <label>Mobile:</label><input type="text" name="mobile" id="mobile"><br/>
+        <label>Email:</label><input type="email" name="email" id="email"><br/>
+        <label>Avatar:</label><input type="file" name="avatar" id="avatar"><br/><br/>
+
+        <button type="button" id="submitForm">Submit</button>
+    </form>
+
+    <button id="homeLink">Home</button>
+
+    <script>
+        document.getElementById("submitForm").addEventListener('click', function (e) {
+            e.preventDefault();
+            const form = new FormData(document.querySelector("#editForm"));
+            form.append('apiKey', apiKey);
+
+            fetch(rootPath + 'insert-contact/', {
+                method: 'POST',
+                headers: { 'Accept': 'application/json, /' },
+                body: form
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === "1") {
+                    alert("Contact added successfully!");
+                    window.open("index.html", "_self");
+                } else {
+                    alert("Error: " + data);
+                }
+            })
+            .catch(err => alert("Submit failed: " + err));
+        });
+
+        document.getElementById("homeLink").addEventListener('click', () => {
+            window.open("index.html", "_self");
+        });
+    </script>
+<footer style="
+  background-color: #222;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  font-family: 'Segoe UI', sans-serif;
+">
+  <p style="margin: 5px 0;">&copy; 2025 | Built by Lebini  Jack with 💻 & ❤</p>
+  <p style="margin: 5px 0;">
+    <a href="index.html" style="color: #1d82a3; text-decoration: none;">Home</a> |
+    <a href="add-contact.html" style="color: #21aad8; text-decoration: none;">Add Contact</a> |
+    <a href="edit-contact.html?id=1" style="color: #00BFFF; text-decoration: none;">Edit Contact</a>
+  </p>
+</footer>
+
+</body>
+</html>

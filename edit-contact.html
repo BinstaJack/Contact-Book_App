@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Contact</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Mini override for tighter layout */
+    .container {
+      max-width: 400px;
+      padding: 30px;
+      margin-top: 60px;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+    }
+
+    input {
+      margin-bottom: 15px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="add-contact.html">Add Contact</a>
+  <a href="#">Edit Contact</a>
+</nav>
+
+<div class="container">
+  <h2>Edit Contact</h2>
+
+  <input type="text" id="name" placeholder="Name" />
+  <input type="text" id="surname" placeholder="Surname" />
+  <input type="tel" id="phone" placeholder="Phone" />
+  <input type="email" id="email" placeholder="Email" />
+
+  <div class="btn-group">
+    <button class="update-btn" onclick="updateContact()">Update</button>
+    <button class="delete-btn" onclick="deleteContact()">Delete</button>
+  </div>
+</div>
+
+<footer>
+  &copy; 2025 Lebini Jack | Built with 💻 & 💙
+</footer>
+
+<script src="config.js"></script>
+<script>
+  function getContactID() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("id");
+  }
+
+  function loadContact() {
+    const contactId = getContactID();
+    fetch(rootPath + "controller/get-contact/?id=" + contactId)
+      .then(res => res.json())
+      .then(data => {
+        const contact = data.contact;
+        document.getElementById("name").value = contact.name;
+        document.getElementById("surname").value = contact.surname;
+        document.getElementById("phone").value = contact.phone;
+        document.getElementById("email").value = contact.email;
+      });
+  }
+
+  function updateContact() {
+    const contactId = getContactID();
+    const updated = {
+      id: contactId,
+      name: document.getElementById("name").value,
+      surname: document.getElementById("surname").value,
+      phone: document.getElementById("phone").value,
+      email: document.getElementById("email").value
+    };
+
+    fetch(rootPath + "controller/update-contact/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updated)
+    })
+    .then(res => res.json())
+    .then(result => {
+      alert(result.success ? "Contact updated!" : "Update failed.");
+      if (result.success) window.location.href = "index.html";
+    });
+  }
+
+  function deleteContact() {
+    if (!confirm("Delete this contact?")) return;
+    const contactId = getContactID();
+
+    fetch(rootPath + "controller/delete-contact/?id=" + contactId)
+      .then(res => res.json())
+      .then(result => {
+        alert(result.success ? "Contact deleted." : "Delete failed.");
+        if (result.success) window.location.href = "index.html";
+      });
+  }
+
+  window.onload = loadContact;
+</script>
+
+</body>
+</html>
